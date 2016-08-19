@@ -1,0 +1,33 @@
+{
+  "name": "object-fit-videos",
+  "version": "0.0.1",
+  "description": "Polyfill for object-fit and object-position CSS properties on video elements",
+  "main": "object-fit-videos.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TricomB2B/object-fit-videos.git"
+  },
+  "keywords": [
+    "object-fit",
+    "object-position",
+    "javascript",
+    "polyfill"
+  ],
+  "author": "Todd Miller <toddses@tricomb2b.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TricomB2B/object-fit-videos/issues"
+  },
+  "homepage": "https://github.com/TricomB2B/object-fit-videos#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-jshint": "^2.0.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.0.0",
+    "jshint": "^2.9.3",
+    "jshint-stylish": "^2.2.1"
+  }
+}
