@@ -16,6 +16,7 @@
  * @version  0.0.2
  *
  * @changelog
+ * 2016-08-19 - Adds object-position support.
  * 2016-08-19 - Add throttle function for more performant resize events
  * 2016-08-19 - Initial release with object-fit support, and
  *              object-position default 'center'
@@ -23,12 +24,12 @@
 (function () {
   'use strict';
 
-  var testImg                = new Image();
-  var supportsObjectFit      = 'object-fit' in testImg.style;
-  var supportsObjectPosition = 'object-position' in testImg.style;
-  var propRegex              = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
+  var testImg                = new Image(),
+      supportsObjectFit      = 'object-fit' in testImg.style,
+      supportsObjectPosition = 'object-position' in testImg.style,
+      propRegex              = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 
-  if (!supportsObjectFit) {
+  if (!supportsObjectFit || !supportsObjectPosition) {
     window.addEventListener('load', initialize);
     throttle('resize', 'optimizedResize');
   }
@@ -47,6 +48,9 @@
         props[parsed[1]] = parsed[2];
       }
 
+      if (props['object-position'])
+        return parsePosition(props);
+
       return props;
   }
 
@@ -61,8 +65,8 @@
       var style = getStyle(videos[index]);
 
       // only do work if the property is on the element
-      if (style['object-fit']) {
-        // set the default value just in case
+      if (style['object-fit'] || style['object-position']) {
+        // set the default values
         style['object-fit'] = style['object-fit'] || 'fill';
         fitIt(videos[index], style);
       }
@@ -135,7 +139,8 @@
           wrapHeight = $wrap.clientHeight,
           wrapRatio  = wrapWidth / wrapHeight;
 
-      var newSize = 0;
+      var newHeight = 0,
+          newWidth  = 0;
       setCss.marginLeft = setCss.marginTop = 0;
 
       // basically we do the opposite action for contain and cover,
@@ -143,19 +148,55 @@
       // greater than the wrapper's aspect ratio
       if (videoRatio < wrapRatio ?
           style['object-fit'] === 'contain' : style['object-fit'] === 'cover') {
-        newSize = wrapHeight * videoRatio;
+        newHeight = wrapHeight * videoRatio;
+        newWidth  = wrapWidth / videoRatio;
 
-        setCss.width  = Math.round(newSize) + 'px';
+        setCss.width  = Math.round(newHeight) + 'px';
         setCss.height = wrapHeight + 'px';
-        setCss.marginLeft = Math.round((wrapWidth - newSize) / 2) + 'px';
+
+        if (style['object-position-x'] === 'left')
+          setCss.marginLeft = 0;
+        else if (style['object-position-x'] === 'right')
+          setCss.marginLeft = Math.round(wrapWidth - newHeight) + 'px';
+        else
+          setCss.marginLeft = Math.round((wrapWidth - newHeight) / 2) + 'px';
       } else {
-        newSize = wrapWidth / videoRatio;
+        newWidth = wrapWidth / videoRatio;
 
         setCss.width     = wrapWidth + 'px';
-        setCss.height    = Math.round(newSize) + 'px';
-        setCss.marginTop = Math.round((wrapHeight - newSize) / 2) + 'px';
+        setCss.height    = Math.round(newWidth) + 'px';
+
+        if (style['object-position-y'] === 'top')
+          setCss.marginTop = 0;
+        else if (style['object-position-y'] === 'bottom')
+          setCss.marginTop = Math.round(wrapHeight - newWidth) + 'px';
+        else
+          setCss.marginTop = Math.round((wrapHeight - newWidth) / 2) + 'px';
       }
     }
+  }
+
+  /**
+   * Split the object-position property into x and y position properties
+   * @param  {object} style Relevant element styles
+   * @return {object}       The style object with the added x and y props
+   */
+  function parsePosition (style) {
+    if (~style['object-position'].indexOf('left'))
+      style['object-position-x'] = 'left';
+    else if (~style['object-position'].indexOf('right'))
+      style['object-position-x'] = 'right';
+    else
+      style['object-position-x'] = 'center';
+
+    if (~style['object-position'].indexOf('top'))
+      style['object-position-y'] = 'top';
+    else if (~style['object-position'].indexOf('bottom'))
+      style['object-position-y'] = 'bottom';
+    else
+      style['object-position-y'] = 'center';
+
+    return style;
   }
 
   /**

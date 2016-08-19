@@ -2,8 +2,6 @@
 
 An open-source polyfill for CSS `object-fit` and `object-position` on videos. Supports IE9-11, Edge, and Safari (and more?). Does nothing on browsers that support these properties.
 
-At this time, only `object-fit` has been implemented.
-
 Many thanks go to both the [object-fit-images](https://github.com/bfred-it/object-fit-images) and [fitie](https://github.com/jonathantneal/fitie) projects for doing a lot of work on their polyfills. Much of this project got its start by following their examples.
 
 ### Installation
