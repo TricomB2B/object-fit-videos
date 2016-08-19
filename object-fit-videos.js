@@ -13,10 +13,12 @@
  *
  * @license  MIT (https://opensource.org/licenses/MIT)
  * @author   Todd Miller <todd.miller@tricomb2b.com>
- * @version  0.0.1
+ * @version  0.0.2
  *
- * @changelog 2016-08-19 - Initial release with object-fit support, and
- *                         object-position default 'center'
+ * @changelog
+ * 2016-08-19 - Add throttle function for more performant resize events
+ * 2016-08-19 - Initial release with object-fit support, and
+ *              object-position default 'center'
  */
 (function () {
   'use strict';
@@ -26,8 +28,10 @@
   var supportsObjectPosition = 'object-position' in testImg.style;
   var propRegex              = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 
-  if (!supportsObjectFit)
+  if (!supportsObjectFit) {
     window.addEventListener('load', initialize);
+    throttle('resize', 'optimizedResize');
+  }
 
   /**
    * Parse the style and look for the special font-family tag
@@ -106,7 +110,7 @@
 
     // set up the event handlers
     $el.addEventListener('loadedmetadata', doWork);
-    window.addEventListener('resize', doWork);
+    window.addEventListener('optimizedResize', doWork);
 
     // we may have missed the loadedmetadata event, so if the video has loaded
     // enough data, just drop the event listener and execute
@@ -152,5 +156,28 @@
         setCss.marginTop = Math.round((wrapHeight - newSize) / 2) + 'px';
       }
     }
+  }
+
+  /**
+   * Throttle an event for better performance
+   * @param  {string} type The even to throttle
+   * @param  {string} name Custom event name to listen for
+   * @param  {object} obj  Optional object to attach the event to
+   */
+  function throttle (type, name, obj) {
+    obj = obj || window;
+    var running = false;
+
+    var func = function () {
+      if (running) return;
+
+      running = true;
+      requestAnimationFrame(function () {
+        obj.dispatchEvent(new CustomEvent(name));
+        running = false;
+      });
+    };
+
+    obj.addEventListener(type, func);
   }
 })();
