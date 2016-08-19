@@ -1,6 +1,6 @@
 # object-fit-videos
 
-An open-source polyfill for CSS `object-fit` and `object-position` on videos. Supports IE9-11, Edge, and Safari. All other browsers support the properties by default.
+An open-source polyfill for CSS `object-fit` and `object-position` on videos. Supports IE9-11, Edge, and Safari (and more?). Does nothing on browsers that support these properties.
 
 At this time, only `object-fit` has been implemented.
 
