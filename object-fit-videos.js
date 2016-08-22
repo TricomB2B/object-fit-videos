@@ -13,7 +13,7 @@
  *
  * @license  MIT (https://opensource.org/licenses/MIT)
  * @author   Todd Miller <todd.miller@tricomb2b.com>
- * @version  0.0.2
+ * @version  0.0.4
  *
  * @changelog
  * 2016-08-19 - Adds object-position support.
