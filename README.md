@@ -2,8 +2,6 @@
 
 An open-source polyfill for CSS `object-fit` and `object-position` on videos. Supports IE9-11, Edge, and Safari (and more?). Does nothing on browsers that support these properties.
 
-Many thanks go to both the [object-fit-images](https://github.com/bfred-it/object-fit-images) and [fitie](https://github.com/jonathantneal/fitie) projects for doing a lot of work on their polyfills. Much of this project got its start by following their examples.
-
 ### Installation
 
 ```sh
@@ -18,12 +16,21 @@ Include the polyfill in your markup
 <script src="path/to/object-fit-videos/dist/object-fit-videos.min.js"></script>
 ```
 
-Add a special font-family CSS property for targeting IE/Edge
+Add a special font-family CSS property for targeting IE/Edge or Safari
 
 ```css
 video {
   object-fit: cover;
   font-family: 'object-fit: cover;';
+}
+```
+
+`object-position` can be used similarly. Note that `object-position` only supports keyword positioning at this time. That's `top`, `bottom`, `left`, `right`, and `center`.
+
+```css
+video {
+  object-fit: cover;
+  font-family: 'object-fit: cover; object-position: left top;';
 }
 ```
 
