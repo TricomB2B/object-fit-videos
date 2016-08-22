@@ -30,6 +30,7 @@ video {
 ```css
 video {
   object-fit: cover;
+  object-position: left top;
   font-family: 'object-fit: cover; object-position: left top;';
 }
 ```
