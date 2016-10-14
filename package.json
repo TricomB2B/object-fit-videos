@@ -1,6 +1,6 @@
 {
   "name": "object-fit-videos",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "Polyfill for object-fit and object-position CSS properties on video elements",
   "main": "object-fit-videos.js",
   "scripts": {
