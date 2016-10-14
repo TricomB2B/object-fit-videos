@@ -9,19 +9,25 @@
  *   object-fit: cover;
  *   font-family: 'object-fit: cover;';
  * }
- * All video elements with this property will be targeted
+ *
+ * Before the closing body tag, or whenever the DOM is ready,
+ * make the JavaScript call
+ * objectFitVideos();
+ *
+ * All video elements with the special CSS property will be targeted
  *
  * @license  MIT (https://opensource.org/licenses/MIT)
  * @author   Todd Miller <todd.miller@tricomb2b.com>
- * @version  0.0.4
- *
+ * @version  1.0.0
  * @changelog
  * 2016-08-19 - Adds object-position support.
  * 2016-08-19 - Add throttle function for more performant resize events
  * 2016-08-19 - Initial release with object-fit support, and
  *              object-position default 'center'
+ * 2016-10-14 - No longer relies on window load event, instead requires a specific
+ *              function call to initialize the videos for object fit and position.
  */
-(function () {
+var objectFitVideos = function () {
   'use strict';
 
   var testImg                = new Image(),
@@ -30,7 +36,7 @@
       propRegex              = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 
   if (!supportsObjectFit || !supportsObjectPosition) {
-    window.addEventListener('load', initialize);
+    initialize();
     throttle('resize', 'optimizedResize');
   }
 
@@ -221,4 +227,4 @@
 
     obj.addEventListener(type, func);
   }
-})();
+};

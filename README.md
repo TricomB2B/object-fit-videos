@@ -25,7 +25,7 @@ video {
 }
 ```
 
-`object-position` can be used similarly. Note that `object-position` only supports keyword positioning at this time. That's `top`, `bottom`, `left`, `right`, and `center`.
+`object-position` can be used similarly. Note that `object-position` only supports keyword positioning at this time. That's `top`, `bottom`, `left`, `right`, and `center`
 
 ```css
 video {
@@ -35,7 +35,13 @@ video {
 }
 ```
 
-The polyfill will do the rest.
+Make the JavaScript call to initialize the videos with the special CSS property
+
+```js
+objectFitVideos();
+```
+
+You can make the call before the closing `</body>` tag or whenever the DOM is ready. The polyfill will do the rest.
 
 ### License
 
