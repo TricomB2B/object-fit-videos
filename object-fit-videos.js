@@ -229,4 +229,6 @@ var objectFitVideos = function () {
   }
 };
 
-module.exports = objectFitVideos;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = objectFitVideos;
+}
