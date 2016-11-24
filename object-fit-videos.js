@@ -228,3 +228,5 @@ var objectFitVideos = function () {
     obj.addEventListener(type, func);
   }
 };
+
+module.exports = objectFitVideos;
