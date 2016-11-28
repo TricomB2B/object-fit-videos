@@ -18,7 +18,7 @@
  *
  * @license  MIT (https://opensource.org/licenses/MIT)
  * @author   Todd Miller <todd.miller@tricomb2b.com>
- * @version  1.0.0
+ * @version  1.0.1
  * @changelog
  * 2016-08-19 - Adds object-position support.
  * 2016-08-19 - Add throttle function for more performant resize events
@@ -26,6 +26,7 @@
  *              object-position default 'center'
  * 2016-10-14 - No longer relies on window load event, instead requires a specific
  *              function call to initialize the videos for object fit and position.
+ * 2016-11-28 - Support CommonJS environment, courtesy of @msorensson
  */
 var objectFitVideos = function () {
   'use strict';
