@@ -221,7 +221,10 @@ var objectFitVideos = function () {
 
       running = true;
       requestAnimationFrame(function () {
-        obj.dispatchEvent(new CustomEvent(name));
+        if (obj.dispatchEvent) {
+          obj.dispatchEvent(new CustomEvent(name));
+        }
+
         running = false;
       });
     };
