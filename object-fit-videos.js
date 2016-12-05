@@ -1,7 +1,7 @@
 /**
  * Object Fit Videos
  * Polyfill for object-fit and object-position CSS properties on video elements
- * Covers IE9, IE10, IE11, Edge, Safari
+ * Covers IE9, IE10, IE11, Edge, Safari <10
  *
  * Usage
  * In your CSS, add a special font-family tag for IE/Edge
@@ -18,7 +18,7 @@
  *
  * @license  MIT (https://opensource.org/licenses/MIT)
  * @author   Todd Miller <todd.miller@tricomb2b.com>
- * @version  1.0.1
+ * @version  1.0.2
  * @changelog
  * 2016-08-19 - Adds object-position support.
  * 2016-08-19 - Add throttle function for more performant resize events
@@ -27,6 +27,7 @@
  * 2016-10-14 - No longer relies on window load event, instead requires a specific
  *              function call to initialize the videos for object fit and position.
  * 2016-11-28 - Support CommonJS environment, courtesy of @msorensson
+ * 2016-12-05 - Refactors the throttling function to support IE
  */
 var objectFitVideos = function () {
   'use strict';
@@ -207,21 +208,31 @@ var objectFitVideos = function () {
   }
 
   /**
-   * Throttle an event for better performance
-   * @param  {string} type The even to throttle
+   * Throttle an event with RequestAnimationFrame API for better performance
+   * @param  {string} type The event to throttle
    * @param  {string} name Custom event name to listen for
    * @param  {object} obj  Optional object to attach the event to
    */
   function throttle (type, name, obj) {
     obj = obj || window;
-    var running = false;
+    var running = false,
+    		evt     = null;
+
+    // IE does not support the CustomEvent constructor
+    // so if that fails do it the old way
+    try {
+    	evt = new CustomEvent(name);
+    } catch (e) {
+    	evt = document.createEvent('Event');
+    	evt.initEvent(name, true, true);
+    }
 
     var func = function () {
       if (running) return;
 
       running = true;
       requestAnimationFrame(function () {
-        obj.dispatchEvent(new CustomEvent(name));
+        obj.dispatchEvent(evt);
         running = false;
       });
     };
