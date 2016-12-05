@@ -10,6 +10,10 @@ $ npm install --save object-fit-videos
 
 Or [yarn](https://yarnpkg.com/)!
 
+```sh
+$ yarn add object-fit-videos
+```
+
 ### Usage
 
 Include the polyfill in your markup
