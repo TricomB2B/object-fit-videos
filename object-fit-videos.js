@@ -216,15 +216,15 @@ var objectFitVideos = function () {
   function throttle (type, name, obj) {
     obj = obj || window;
     var running = false,
-    		evt     = null;
+        evt     = null;
 
     // IE does not support the CustomEvent constructor
     // so if that fails do it the old way
     try {
-    	evt = new CustomEvent(name);
+      evt = new CustomEvent(name);
     } catch (e) {
-    	evt = document.createEvent('Event');
-    	evt.initEvent(name, true, true);
+      evt = document.createEvent('Event');
+      evt.initEvent(name, true, true);
     }
 
     var func = function () {
