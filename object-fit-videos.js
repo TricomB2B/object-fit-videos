@@ -29,7 +29,7 @@
  * 2016-11-28 - Support CommonJS environment, courtesy of @msorensson
  * 2016-12-05 - Refactors the throttling function to support IE
  */
-var objectFitVideos = function () {
+var objectFitVideos = function (videos) {
   'use strict';
 
   var testImg                = new Image(),
@@ -38,7 +38,7 @@ var objectFitVideos = function () {
       propRegex              = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 
   if (!supportsObjectFit || !supportsObjectPosition) {
-    initialize();
+    initialize(videos);
     throttle('resize', 'optimizedResize');
   }
 
@@ -65,9 +65,16 @@ var objectFitVideos = function () {
   /**
    * Initialize all the relevant video elements and get them fitted
    */
-  function initialize () {
-    var videos = document.querySelectorAll('video'),
-        index  = -1;
+  function initialize (videos) {
+    var index  = -1;
+    videos = videos ? videos : 'video';
+
+    // use videos as a selector or just select all videos
+    if (typeof videos === 'string') {
+      videos = document.querySelectorAll(videos);
+    } else if (!('length' in videos)) {
+      videos = [videos];
+    }
 
     while (videos[++index]) {
       var style = getStyle(videos[index]);
@@ -95,6 +102,9 @@ var objectFitVideos = function () {
     var setCss = $el.style,
         getCss = window.getComputedStyle($el);
 
+    var videoWidth = 0;
+    var videoHeight = 0;
+
     // create and insert a wrapper element
     var $wrap = document.createElement('object-fit');
     $wrap.appendChild($el.parentNode.replaceChild($wrap, $el));
@@ -121,14 +131,14 @@ var objectFitVideos = function () {
     setCss.opacity = 1;
 
     // set up the event handlers
-    $el.addEventListener('loadedmetadata', doWork);
-    window.addEventListener('optimizedResize', doWork);
+    $el.addEventListener('loadedmetadata', startWork);
+    window.addEventListener('optimizedResize', startWork);
 
     // we may have missed the loadedmetadata event, so if the video has loaded
     // enough data, just drop the event listener and execute
     if ($el.readyState >= 1) {
-      $el.removeEventListener('loadedmetadata', doWork);
-      doWork();
+      $el.removeEventListener('loadedmetadata', startWork);
+      startWork();
     }
 
     /**
@@ -139,16 +149,12 @@ var objectFitVideos = function () {
       // the actual size and ratio of the video
       // we do this here, even though it doesn't change, because
       // at this point we can be sure the metadata has loaded
-      var videoWidth  = $el.videoWidth,
-          videoHeight = $el.videoHeight,
-          videoRatio  = videoWidth / videoHeight;
+      var videoRatio  = videoWidth / videoHeight;
 
       var wrapWidth  = $wrap.clientWidth,
           wrapHeight = $wrap.clientHeight,
           wrapRatio  = wrapWidth / wrapHeight;
 
-      var newHeight = 0,
-          newWidth  = 0;
       setCss.marginLeft = setCss.marginTop = 0;
 
       // basically we do the opposite action for contain and cover,
@@ -156,8 +162,7 @@ var objectFitVideos = function () {
       // greater than the wrapper's aspect ratio
       if (videoRatio < wrapRatio ?
           style['object-fit'] === 'contain' : style['object-fit'] === 'cover') {
-        newHeight = wrapHeight * videoRatio;
-        newWidth  = wrapWidth / videoRatio;
+        var newHeight = wrapHeight * videoRatio;
 
         setCss.width  = Math.round(newHeight) + 'px';
         setCss.height = wrapHeight + 'px';
@@ -169,7 +174,7 @@ var objectFitVideos = function () {
         else
           setCss.marginLeft = Math.round((wrapWidth - newHeight) / 2) + 'px';
       } else {
-        newWidth = wrapWidth / videoRatio;
+        var newWidth = wrapWidth / videoRatio;
 
         setCss.width     = wrapWidth + 'px';
         setCss.height    = Math.round(newWidth) + 'px';
@@ -180,6 +185,41 @@ var objectFitVideos = function () {
           setCss.marginTop = Math.round(wrapHeight - newWidth) + 'px';
         else
           setCss.marginTop = Math.round((wrapHeight - newWidth) / 2) + 'px';
+      }
+    }
+
+    /* Android Stock browser can give us the incorrect video dimensions
+     * at the beginning so monitor this for duration of video playing.
+     * @methodOf fitIt
+     */
+    function videoDimensionsMonitor() {
+      if($el.videoWidth !== videoWidth || $el.videoHeight !== videoHeight) {
+        videoWidth = $el.videoWidth;
+        videoHeight = $el.videoHeight;
+        doWork();
+      }
+    }
+
+    /**
+     * Ensure we have video dimensions before applying the fixes.
+     * Primarily fixes Android Stock Browsers < 4.4.4.
+     * @methodOf fitIt
+     */
+    function startWork () {
+      videoWidth = $el.videoWidth;
+      videoHeight = $el.videoHeight;
+
+      if (!videoWidth || !videoHeight) {
+        window.setTimeout(startWork, 50);
+      } else {
+        doWork();
+
+        $el.addEventListener("timeupdate", videoDimensionsMonitor);
+
+        $el.addEventListener("ended", function ended() {
+          $el.removeEventListener("timeupdate", videoDimensionsMonitor);
+          $el.removeEventListener("ended", ended);
+        });
       }
     }
   }
