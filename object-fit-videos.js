@@ -142,40 +142,6 @@ var objectFitVideos = function (videos) {
     }
 
     /**
-     * Ensure we have video dimensions before applying the fixes.
-     * Primarily fixes Android Stock Browsers < 4.4.4.
-     * @methodOf fitIt
-     */
-    function startWork () {
-      videoWidth = $el.videoWidth;
-      videoHeight = $el.videoHeight;
-
-      if (!videoWidth || !videoHeight) {
-        window.setTimeout(startWork, 50);
-      } else {
-        doWork();
-
-        // Android Stock browser can give us the incorrect video dimensions
-        // at the beginning so monitor this for duration of video playing.
-
-        function videoDimensionsMonitor() {
-          if($el.videoWidth !== videoWidth || $el.videoHeight !== videoHeight) {
-            videoWidth = $el.videoWidth;
-            videoHeight = $el.videoHeight;
-            doWork();
-          }
-        }
-
-        $el.addEventListener("timeupdate", videoDimensionsMonitor);
-
-        $el.addEventListener("ended", function ended() {
-          $el.removeEventListener("timeupdate", videoDimensionsMonitor);
-          $el.removeEventListener("ended", ended);
-        });
-      }
-    }
-
-    /**
      * Do the actual sizing. Math.
      * @methodOf fitIt
      */
@@ -219,6 +185,41 @@ var objectFitVideos = function (videos) {
           setCss.marginTop = Math.round(wrapHeight - newWidth) + 'px';
         else
           setCss.marginTop = Math.round((wrapHeight - newWidth) / 2) + 'px';
+      }
+    }
+
+    /* Android Stock browser can give us the incorrect video dimensions
+     * at the beginning so monitor this for duration of video playing.
+     * @methodOf fitIt
+     */
+    function videoDimensionsMonitor() {
+      if($el.videoWidth !== videoWidth || $el.videoHeight !== videoHeight) {
+        videoWidth = $el.videoWidth;
+        videoHeight = $el.videoHeight;
+        doWork();
+      }
+    }
+
+    /**
+     * Ensure we have video dimensions before applying the fixes.
+     * Primarily fixes Android Stock Browsers < 4.4.4.
+     * @methodOf fitIt
+     */
+    function startWork () {
+      videoWidth = $el.videoWidth;
+      videoHeight = $el.videoHeight;
+
+      if (!videoWidth || !videoHeight) {
+        window.setTimeout(startWork, 50);
+      } else {
+        doWork();
+
+        $el.addEventListener("timeupdate", videoDimensionsMonitor);
+
+        $el.addEventListener("ended", function ended() {
+          $el.removeEventListener("timeupdate", videoDimensionsMonitor);
+          $el.removeEventListener("ended", ended);
+        });
       }
     }
   }
