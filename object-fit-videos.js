@@ -28,6 +28,11 @@
  *              function call to initialize the videos for object fit and position.
  * 2016-11-28 - Support CommonJS environment, courtesy of @msorensson
  * 2016-12-05 - Refactors the throttling function to support IE
+ * 2017-09-26 - Fix an issue with autplay not working on polyfilled videos
+ *            - Adds the capability to specify elements to polyfill,
+ *              instead of just checking every video element for the
+ *              CSS property. Slight performance gain in most usecases,
+ *              and a bigger gain in a few usecases.
  */
 var objectFitVideos = function (videos) {
   'use strict';
