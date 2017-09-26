@@ -49,6 +49,30 @@ objectFitVideos();
 
 You can make the call before the closing `</body>` tag or whenever the DOM is ready. The polyfill will do the rest.
 
+### Polyfilling Specific Elements
+
+You can also pass elements to the `objectFitVideos()` function to only polyfill specific videos. A couple examples:
+
+```js
+objectFitVideos(document.querySelectorAll('.videos'));
+```
+
+```js
+objectFitVideos(document.getElementById('vid'));
+```
+
+So on and so forth.
+
+### Contributions
+
+Feel free to open Pull Requests, bug reports, feature requests.
+
+Special thanks to these folks to who have contributed code:
+
+[msorensson](https://github.com/msorensson)  
+[oncode](https://github.com/oncode)  
+[richtr](https://github.com/richtr)
+
 ### License
 
 Copyright (c) 2016 TricomB2B
