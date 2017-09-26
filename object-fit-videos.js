@@ -189,6 +189,10 @@ var objectFitVideos = function (videos) {
         else
           setCss.marginTop = Math.round((wrapHeight - newWidth) / 2) + 'px';
       }
+
+      // play the video if autoplay is set
+      if ($el.autoplay)
+        $el.play();
     }
   }
 
