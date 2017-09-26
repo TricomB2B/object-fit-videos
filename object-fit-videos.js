@@ -29,7 +29,7 @@
  * 2016-11-28 - Support CommonJS environment, courtesy of @msorensson
  * 2016-12-05 - Refactors the throttling function to support IE
  */
-var objectFitVideos = function () {
+var objectFitVideos = function (videos) {
   'use strict';
 
   var testImg                = new Image(),
@@ -38,7 +38,7 @@ var objectFitVideos = function () {
       propRegex              = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 
   if (!supportsObjectFit || !supportsObjectPosition) {
-    initialize();
+    initialize(videos);
     throttle('resize', 'optimizedResize');
   }
 
@@ -65,9 +65,16 @@ var objectFitVideos = function () {
   /**
    * Initialize all the relevant video elements and get them fitted
    */
-  function initialize () {
-    var videos = document.querySelectorAll('video'),
-        index  = -1;
+  function initialize (videos) {
+    var index  = -1;
+    videos = videos || 'video';
+
+    // use videos as a selector or just select all videos
+    if (typeof videos === 'string') {
+      videos = document.querySelectorAll(videos);
+    } else if (!('length' in videos)) {
+      videos = [videos];
+    }
 
     while (videos[++index]) {
       var style = getStyle(videos[index]);
