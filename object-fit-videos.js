@@ -67,7 +67,7 @@ var objectFitVideos = function (videos) {
    */
   function initialize (videos) {
     var index  = -1;
-    videos = videos || 'video';
+    videos = videos ? videos : 'video';
 
     // use videos as a selector or just select all videos
     if (typeof videos === 'string') {
@@ -102,6 +102,9 @@ var objectFitVideos = function (videos) {
     var setCss = $el.style,
         getCss = window.getComputedStyle($el);
 
+    var videoWidth = 0;
+    var videoHeight = 0;
+
     // create and insert a wrapper element
     var $wrap = document.createElement('object-fit');
     $wrap.appendChild($el.parentNode.replaceChild($wrap, $el));
@@ -128,14 +131,14 @@ var objectFitVideos = function (videos) {
     setCss.opacity = 1;
 
     // set up the event handlers
-    $el.addEventListener('loadedmetadata', doWork);
-    window.addEventListener('optimizedResize', doWork);
+    $el.addEventListener('loadedmetadata', startWork);
+    window.addEventListener('optimizedResize', startWork);
 
     // we may have missed the loadedmetadata event, so if the video has loaded
     // enough data, just drop the event listener and execute
     if ($el.readyState >= 1) {
-      $el.removeEventListener('loadedmetadata', doWork);
-      doWork();
+      $el.removeEventListener('loadedmetadata', startWork);
+      startWork();
     }
 
     /**
@@ -146,16 +149,12 @@ var objectFitVideos = function (videos) {
       // the actual size and ratio of the video
       // we do this here, even though it doesn't change, because
       // at this point we can be sure the metadata has loaded
-      var videoWidth  = $el.videoWidth,
-          videoHeight = $el.videoHeight,
-          videoRatio  = videoWidth / videoHeight;
+      var videoRatio  = videoWidth / videoHeight;
 
       var wrapWidth  = $wrap.clientWidth,
           wrapHeight = $wrap.clientHeight,
           wrapRatio  = wrapWidth / wrapHeight;
 
-      var newHeight = 0,
-          newWidth  = 0;
       setCss.marginLeft = setCss.marginTop = 0;
 
       // basically we do the opposite action for contain and cover,
@@ -163,8 +162,7 @@ var objectFitVideos = function (videos) {
       // greater than the wrapper's aspect ratio
       if (videoRatio < wrapRatio ?
           style['object-fit'] === 'contain' : style['object-fit'] === 'cover') {
-        newHeight = wrapHeight * videoRatio;
-        newWidth  = wrapWidth / videoRatio;
+        var newHeight = wrapHeight * videoRatio;
 
         setCss.width  = Math.round(newHeight) + 'px';
         setCss.height = wrapHeight + 'px';
@@ -176,7 +174,7 @@ var objectFitVideos = function (videos) {
         else
           setCss.marginLeft = Math.round((wrapWidth - newHeight) / 2) + 'px';
       } else {
-        newWidth = wrapWidth / videoRatio;
+        var newWidth = wrapWidth / videoRatio;
 
         setCss.width     = wrapWidth + 'px';
         setCss.height    = Math.round(newWidth) + 'px';
@@ -187,6 +185,41 @@ var objectFitVideos = function (videos) {
           setCss.marginTop = Math.round(wrapHeight - newWidth) + 'px';
         else
           setCss.marginTop = Math.round((wrapHeight - newWidth) / 2) + 'px';
+      }
+    }
+
+    /* Android Stock browser can give us the incorrect video dimensions
+     * at the beginning so monitor this for duration of video playing.
+     * @methodOf fitIt
+     */
+    function videoDimensionsMonitor() {
+      if($el.videoWidth !== videoWidth || $el.videoHeight !== videoHeight) {
+        videoWidth = $el.videoWidth;
+        videoHeight = $el.videoHeight;
+        doWork();
+      }
+    }
+
+    /**
+     * Ensure we have video dimensions before applying the fixes.
+     * Primarily fixes Android Stock Browsers < 4.4.4.
+     * @methodOf fitIt
+     */
+    function startWork () {
+      videoWidth = $el.videoWidth;
+      videoHeight = $el.videoHeight;
+
+      if (!videoWidth || !videoHeight) {
+        window.setTimeout(startWork, 50);
+      } else {
+        doWork();
+
+        $el.addEventListener("timeupdate", videoDimensionsMonitor);
+
+        $el.addEventListener("ended", function ended() {
+          $el.removeEventListener("timeupdate", videoDimensionsMonitor);
+          $el.removeEventListener("ended", ended);
+        });
       }
     }
   }
