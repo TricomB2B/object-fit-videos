@@ -66,13 +66,14 @@ var objectFitVideos = function (videos) {
    * Initialize all the relevant video elements and get them fitted
    */
   function initialize (videos) {
-    var index  = -1;
-    videos = videos || 'video';
+    var index = -1;
 
-    // use videos as a selector or just select all videos
-    if (typeof videos === 'string') {
-      videos = document.querySelectorAll(videos);
+    if (!videos) {
+      // if no videos given, query all video elements
+      videos = document.querySelectorAll('video');
     } else if (!('length' in videos)) {
+      // convert to an array for proper looping if an array or NodeList
+      // was not given
       videos = [videos];
     }
 
