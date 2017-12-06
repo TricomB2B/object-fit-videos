@@ -39,7 +39,7 @@
 var objectFitVideos = function (videos) {
   'use strict';
 
-  var isEdge = navigator.userAgent.indexOf('Edge/') >= 0
+  var isEdge = navigator.userAgent.indexOf('Edge/') >= 0;
 
   var testImg                = new Image(),
       supportsObjectFit      = 'object-fit' in testImg.style && !isEdge,
