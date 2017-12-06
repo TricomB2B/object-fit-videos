@@ -33,13 +33,17 @@
  *              instead of just checking every video element for the
  *              CSS property. Slight performance gain in most usecases,
  *              and a bigger gain in a few usecases.
+ * 2017-10-24 - Add user agent check to enable polyfill for all Edge browsers.
+ *              object-fit is supported on Edge >= 16, but currently just for images.
  */
 var objectFitVideos = function (videos) {
   'use strict';
 
+  var isEdge = navigator.userAgent.indexOf('Edge/') >= 0
+
   var testImg                = new Image(),
-      supportsObjectFit      = 'object-fit' in testImg.style,
-      supportsObjectPosition = 'object-position' in testImg.style,
+      supportsObjectFit      = 'object-fit' in testImg.style && !isEdge,
+      supportsObjectPosition = 'object-position' in testImg.style && !isEdge,
       propRegex              = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 
   if (!supportsObjectFit || !supportsObjectPosition) {
