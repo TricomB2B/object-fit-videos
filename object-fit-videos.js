@@ -114,7 +114,8 @@ var objectFitVideos = function (videos) {
 
     // create and insert a wrapper element
     var $wrap = document.createElement('object-fit');
-    $wrap.appendChild($el.parentNode.replaceChild($wrap, $el));
+    $el.parentNode.insertBefore($wrap, $el);
+    $wrap.appendChild($el);
 
     // style the wrapper element to mostly match the source element
     var wrapCss = {
