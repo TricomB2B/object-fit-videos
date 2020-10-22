@@ -39,11 +39,9 @@
 var objectFitVideos = function (videos) {
   'use strict';
 
-  var isEdge = navigator.userAgent.indexOf('Edge/') >= 0;
-
   var testImg                = new Image(),
-      supportsObjectFit      = 'object-fit' in testImg.style && !isEdge,
-      supportsObjectPosition = 'object-position' in testImg.style && !isEdge,
+      supportsObjectFit      = 'object-fit' in testImg.style,
+      supportsObjectPosition = 'object-position' in testImg.style,
       propRegex              = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 
   if (!supportsObjectFit || !supportsObjectPosition) {
