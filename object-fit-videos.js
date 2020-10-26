@@ -39,11 +39,9 @@
 var objectFitVideos = function (videos) {
   'use strict';
 
-  var isEdge = navigator.userAgent.indexOf('Edge/') >= 0;
-
   var testImg                = new Image(),
-      supportsObjectFit      = 'object-fit' in testImg.style && !isEdge,
-      supportsObjectPosition = 'object-position' in testImg.style && !isEdge,
+      supportsObjectFit      = 'object-fit' in testImg.style,
+      supportsObjectPosition = 'object-position' in testImg.style,
       propRegex              = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 
   if (!supportsObjectFit || !supportsObjectPosition) {
@@ -114,7 +112,8 @@ var objectFitVideos = function (videos) {
 
     // create and insert a wrapper element
     var $wrap = document.createElement('object-fit');
-    $wrap.appendChild($el.parentNode.replaceChild($wrap, $el));
+    $el.parentNode.insertBefore($wrap, $el);
+    $wrap.appendChild($el);
 
     // style the wrapper element to mostly match the source element
     var wrapCss = {
